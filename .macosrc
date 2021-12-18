@@ -1,0 +1,9 @@
+# vim: filetype=bash
+
+alias ls="gls --color=tty"
+
+alias l="ls -CFG"
+alias ll="ls -alFhG"
+
+alias dircolors='gdircolors'
+alias sed="gsed"

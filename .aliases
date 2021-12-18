@@ -1,0 +1,22 @@
+# vim: filetype=bash
+
+alias l="ls -CF --color=auto"
+alias ls="ls -h --color=auto"
+alias ll="ls -alFh --color=auto"
+
+alias find="fd"
+alias grep="rg"
+
+grep_opts="--color=auto -n -I"
+# alias grep="grep $grep_opts"
+alias findf="grep $grep_opts "
+alias findgo="grep $grep_opts -t go "
+alias findjs="grep $grep_opts -t js "
+alias findphp="grep $grep_opts -t php "
+alias findpy="grep $grep_opts -t py "
+alias findrb="grep $grep_opts -t rb "
+alias findrs="grep $grep_opts -t rust "
+
+alias rmpyc="find -e pyc -I | xargs rm "
+alias rmpyo="find -e pyo -I | xargs rm "
+alias rmpycache="find -t d -I __pycache__ | xargs rm -rf"

@@ -1,0 +1,22 @@
+# vim: filetype=bash
+
+bindkey -v
+bindkey '^i' expand-or-complete-prefix
+bindkey '^A' beginning-of-line
+bindkey "^B" vi-backward-char
+bindkey '^E' end-of-line
+bindkey "^F" vi-forward-char
+bindkey "^H" backward-delete-char
+bindkey "^K" kill-line
+bindkey "^N" down-line-or-history
+bindkey "^P" up-line-or-history
+bindkey "^U" backward-kill-line
+bindkey "^W" backward-kill-word
+bindkey "^X" vi-cmd-mode
+
+bindkey -M viins "^[f" forward-word  # option/alt + f
+bindkey -M vicmd "^[f" forward-word  # option/alt + f
+bindkey -M viins "^[b" backward-word  # option/alt + b
+bindkey -M vicmd "^[b" backward-word  # option/alt + b
+bindkey -M viins "^[d" kill-word  # option/alt + d
+bindkey -M vicmd "^[d" kill-word  # option/alt + d

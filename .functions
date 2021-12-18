@@ -1,0 +1,68 @@
+# vim: filetype=bash
+
+function mkpym() {
+    mkdir $1
+    touch $1/__init__.py
+}
+
+# used with findxxx above
+# usage: findpy xxx | xvim
+function xvim() {
+    awk -F: '{print $1}' | uniq | xargs -o vim
+}
+
+# usage: findpy xxx | xsed -i s/abc/cba/g
+function xsed() {
+    awk -F: '{print $1}' | uniq | xargs sed $@
+}
+
+function set_http_proxy() {
+    export http_proxy=http://$1;
+    export https_proxy=http://$1;
+    export HTTP_PROXY=http://$1;
+    export HTTPS_PROXY=http://$1;
+}
+
+function unset_http_proxy() {
+    unset http_proxy;
+    unset https_proxy;
+    unset HTTP_PROXY;
+    unset HTTPS_PROXY;
+}
+
+function set_git_proxy() {
+    git config http.proxy socks5://$1;
+    git config https.proxy socks5://$1;
+}
+
+function unset_git_proxy() {
+    git config --unset http.proxy;
+    git config --unset https.proxy;
+}
+
+function reset_git_author() {
+    git filter-branch --env-filter '
+
+    CORRECT_NAME="$(git config user.name)"
+    CORRECT_EMAIL="$(git config user.email)"
+
+    if [ "$GIT_COMMITTER_NAME" != "$CORRECT_NAME" ]
+    then
+        export GIT_COMMITTER_NAME="$CORRECT_NAME"
+    fi
+    if [ "$GIT_COMMITTER_EMAIL" != "$CORRECT_EMAIL" ]
+    then
+        export GIT_COMMITTER_EMAIL="$CORRECT_EMAIL"
+    fi
+    if [ "$GIT_AUTHOR_NAME" != "$CORRECT_NAME" ]
+    then
+        export GIT_AUTHOR_NAME="$CORRECT_NAME"
+    fi
+    if [ "$GIT_AUTHOR_EMAIL" != "$CORRECT_EMAIL" ]
+    then
+        export GIT_AUTHOR_EMAIL="$CORRECT_EMAIL"
+    fi
+    ' --tag-name-filter cat -- --branches --tags
+}
+
+

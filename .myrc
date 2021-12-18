@@ -1,0 +1,40 @@
+# vim: filetype=bash
+# User configuration
+
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+if [ -f $SCRIPTPATH/.aliases ]; then
+    source $SCRIPTPATH/.aliases
+fi
+
+if [ -f $SCRIPTPATH/.bindkey ]; then
+    source $SCRIPTPATH/.bindkey
+fi
+
+if [ -f $SCRIPTPATH/.exports ]; then
+    source $SCRIPTPATH/.exports
+fi
+
+if [ -f $SCRIPTPATH/.functions ]; then
+    source $SCRIPTPATH/.functions
+fi
+
+if [[ $OSTYPE == darwin* ]]; then
+    source $SCRIPTPATH/.macosrc
+elif [[ $OSTYPE == linux* ]]; then
+    source $SCRIPTPATH/.linuxrc
+fi
+
+if [ -f $SCRIPTPATH/.postrc ]; then
+    source $SCRIPTPATH/.postrc
+fi
