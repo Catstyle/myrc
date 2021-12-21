@@ -1,46 +1,46 @@
 # vim: filetype=bash
 
-function mkpym() {
+mkpym() {
     mkdir $1
     touch $1/__init__.py
 }
 
 # used with findxxx above
 # usage: findpy xxx | xvim
-function xvim() {
+xvim() {
     awk -F: '{print $1}' | uniq | xargs -o vim
 }
 
 # usage: findpy xxx | xsed -i s/abc/cba/g
-function xsed() {
+xsed() {
     awk -F: '{print $1}' | uniq | xargs sed $@
 }
 
-function set_http_proxy() {
+set_http_proxy() {
     export http_proxy=http://$1;
     export https_proxy=http://$1;
     export HTTP_PROXY=http://$1;
     export HTTPS_PROXY=http://$1;
 }
 
-function unset_http_proxy() {
+unset_http_proxy() {
     unset http_proxy;
     unset https_proxy;
     unset HTTP_PROXY;
     unset HTTPS_PROXY;
 }
 
-function set_git_proxy() {
+set_git_proxy() {
     git config http.proxy socks5://$1;
     git config https.proxy socks5://$1;
 }
 
-function unset_git_proxy() {
+unset_git_proxy() {
     git config --unset http.proxy;
     git config --unset https.proxy;
 }
 
-function reset_git_author() {
+reset_git_author() {
     git filter-branch --env-filter '
 
     CORRECT_NAME="$(git config user.name)"
@@ -65,4 +65,101 @@ function reset_git_author() {
     ' --tag-name-filter cat -- --branches --tags
 }
 
+# Run command/application and choose paths/files with fzf.
+# Always return control of the terminal to user (e.g. when opening GUIs).
+#
+# Usage:
+# f cd [OPTION]... (hit enter, choose path)
+# f cat [OPTION]... (hit enter, choose files)
+# f vim [OPTION]... (hit enter, choose files)
+# f vlc [OPTION]... (hit enter, choose files)
 
+f() {
+    # Store the program
+    program="$1"
+
+    # Remove first argument off the list
+    shift
+
+    # Store option flags with separating spaces, or just set as single space
+    opts="$@"
+    if [ -z "${opts}" ]; then
+        opts=""
+    else
+        opts="$opts"
+    fi
+
+    # Store the arguments from fzf
+    arguments=($(fzf --multi))
+
+    # If no arguments passed (e.g. if Esc pressed), return to terminal
+    if [ -z "${arguments}" ]; then
+        return 1
+    fi
+
+    $program$opts $arguments
+}
+
+# using ripgrep combined with preview
+# find-in-file - usage: fif <searchTerm>
+fif() {
+  if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
+  rg --files-with-matches --no-messages --hidden -i "$1" |\
+  fzf --preview "highlight -O ansi -l {} 2> /dev/null | rg --colors 'match:bg:yellow' --ignore-case --pretty --context 10 '$1' || rg --ignore-case --pretty --context 10 '$1' {}"
+}
+
+# fkill - kill processes - list only the ones you can kill. Modified the earlier script.
+fkill() {
+    local pid
+    if [ "$UID" != "0" ]; then
+        pid=$(ps -f -u $UID | sed 1d | fzf -m | awk '{print $2}')
+    else
+        pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+    fi
+
+    if [ "x$pid" != "x" ]
+    then
+        echo $pid | xargs kill -${1:-9}
+    fi
+}
+
+# fshow - git commit browser
+fshow() {
+  git log --graph --color=always \
+      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+      --bind "ctrl-m:execute:
+                (grep -o '[a-f0-9]\{7\}' | head -1 |
+                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                {}
+FZF-EOF"
+}
+
+alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
+_gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
+_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always %'"
+
+# fcoc_preview - checkout git commit with previews
+fcoc_preview() {
+  local commit
+  commit=$( glNoGraph |
+    fzf --no-sort --reverse --tiebreak=index --no-multi \
+        --ansi --preview="$_viewGitLogLine" ) &&
+  git checkout $(echo "$commit" | sed "s/ .*//")
+}
+
+# fshow_preview - git commit browser with previews
+fshow_preview() {
+    glNoGraph |
+        fzf --no-sort --reverse --tiebreak=index --no-multi \
+            --ansi --preview="$_viewGitLogLine" \
+                --header "enter to view, alt-y to copy hash" \
+                --bind "enter:execute:$_viewGitLogLine   | less -R" \
+                --bind "alt-y:execute:$_gitLogLineToHash | xclip"
+}
+
+unalias z 2> /dev/null
+z() {
+  [ $# -gt 0 ] && _z "$*" && return
+  cd "$(_z -l 2>&1 | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" | sed 's/^[0-9,.]* *//')"
+}

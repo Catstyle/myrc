@@ -7,7 +7,7 @@ alias ll="ls -alFh --color=auto"
 alias find="fd"
 alias grep="rg"
 
-grep_opts="--color=auto -n -I"
+grep_opts="--color=auto -n "
 # alias grep="grep $grep_opts"
 alias findf="grep $grep_opts "
 alias findgo="grep $grep_opts -t go "
