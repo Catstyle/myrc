@@ -4,8 +4,10 @@ echo "myrc in path $SCRIPTPATH";
 setup_zsh() {
     echo "found zsh, setup myrc into $HOME/.zshrc"
     mv $HOME/.zshrc $HOME/.zshrc.before-myrc
-    cp $SCRIPTPATH/.zshrc $HOME/.zshrc
-    echo "source $SCRIPTPATH/.myrc" >> $HOME/.zshrc
+    echo "source $SCRIPTPATH/.prerc" > /tmp/.zshrc.template
+    cat $SCRIPTPATH/.zshrc >> /tmp/.zshrc.template
+    echo "source $SCRIPTPATH/.myrc" >> /tmp/.zshrc.template
+    mv /tmp/.zshrc.template $HOME/.zshrc
 }
 
 case "$SHELL" in 

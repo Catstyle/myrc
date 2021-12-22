@@ -1,0 +1,7 @@
+# vim: filetype=bash
+
+if [[ $OSTYPE == darwin* ]]; then
+    # zsh-dircolors-solarized need dircolors
+    alias dircolors='gdircolors'
+elif [[ $OSTYPE == linux* ]]; then
+fi
