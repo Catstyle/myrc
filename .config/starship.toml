@@ -1,0 +1,209 @@
+format = """$username\
+$hostname\
+${custom.os}\
+$directory\
+$vcsh\
+${custom.giturl}\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$fill\
+$status\
+$cmd_duration\
+$jobs\
+$all\
+\\[${custom.proxy}$memory_usage$battery$time\\]\
+$line_break\
+$character"""
+
+
+[aws]
+format = '[$symbol($profile)(\($region\) )]($style)'
+style = "yellow"
+symbol = "☁️ "
+
+
+[battery]
+format = "[$percentage$symbol]($style)"
+# full_symbol = "🔋"
+# charging_symbol = "⚡️"
+# discharging_symbol = "💀"
+
+[[battery.display]]
+threshold = 100
+style = "green"
+
+[[battery.display]]  # "red" style and discharging_symbol when capacity is between 0% and 10%
+threshold = 10
+style = "red"
+
+[[battery.display]]  # "yellow" style and 💦 symbol when capacity is between 10% and 30%
+threshold = 30
+style = "yellow"
+# discharging_symbol = "💦"
+
+
+[character]
+success_symbol = "[❯](blue)"
+error_symbol = "[✗](red)"
+vicmd_symbol = "[V](green)"
+
+
+[cmd_duration]
+min_time = 200
+format = "[ $duration]($style) "
+style = "101"
+
+
+[directory]
+truncation_length = 3
+truncate_to_repo = false
+fish_style_pwd_dir_length = 1
+style = "blue"
+
+
+[docker_context]
+format = "[$symbol\\($context\\)]($style) "
+symbol = "🐳"
+style = 'blue'
+
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = ""
+
+
+[git_metrics]
+disabled = false
+added_style = "bold blue"
+format = '[+$added]($added_style)/[-$deleted]($deleted_style) '
+
+
+[git_status]
+format = '([$all_status$ahead_behind]($style))'
+style = "green"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+deleted = "✘${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+modified = "!${count}"
+staged = "+${count}"
+stashed = "\\$${count}"
+untracked = "?${count}"
+# conflicted = "🏳"
+# ahead = "🏎💨"
+# behind = "😰"
+# diverged = "😵"
+# up_to_date = "✓"
+# untracked = "🤷"
+# stashed = "📦"
+# modified = "📝"
+# staged = '[++\($count\)](green)'
+# renamed = "👅"
+# deleted = "🗑"
+
+
+[golang]
+format = "[$symbol\\($version\\) ]($style)"
+symbol = '🐹'
+style = 'cyan'
+
+
+[hostname]
+ssh_only = true
+format =  "@[$hostname](red) "
+
+
+[jobs]
+symbol = ""
+number_threshold = 1
+symbol_threshold = 1
+style = '7'
+
+
+[memory_usage]
+disabled = false
+threshold = -1
+format = "[$ram_pct$symbol]($style) "
+symbol = "mem"
+
+
+[python]
+format = "[${symbol}${pyenv_prefix}${version} \\($virtualenv\\) ]($style)"
+style = "6"
+
+
+[status]
+disabled = false
+
+
+[time]
+disabled = false
+# format = "🕙[\\[$time\\]]($style)"
+format = "[$time]($style)"
+
+
+[username]
+style_user = "white"
+style_root = "black"
+format = "[$user]($style) "
+disabled = false
+show_always = true
+
+[custom.giturl]
+# disabled = true
+description = "Display symbol for remote Git server"
+command = """
+GIT_REMOTE=$(command git ls-remote --get-url 2> /dev/null)
+if [[ "$GIT_REMOTE" =~ "github" ]]; then
+    GIT_REMOTE_SYMBOL=" "
+elif [[ "$GIT_REMOTE" =~ "gitlab" ]]; then
+    GIT_REMOTE_SYMBOL=" "
+elif [[ "$GIT_REMOTE" =~ "bitbucket" ]]; then
+    GIT_REMOTE_SYMBOL=" "
+elif [[ "$GIT_REMOTE" =~ "git" ]]; then
+    GIT_REMOTE_SYMBOL=" "
+else
+    GIT_REMOTE_SYMBOL=" "
+fi
+echo "$GIT_REMOTE_SYMBOL "
+"""
+when = 'git rev-parse --is-inside-work-tree 2> /dev/null'
+shell = ["bash", "--noprofile", "--norc"]
+format = "$output "
+
+# show os icon, thanks https://www.nerdfonts.com/cheat-sheet
+#                   
+[custom.os]
+disabled = false
+command = """
+if [ $(uname -s) == "Darwin" ]; then
+    echo 
+elif [ $(uname -s) == "Linux" ]; then
+    OS=$(cat /etc/os-release | grep "^ID=" | awk -F= '{print $2}' | sed s/\\"//g)
+    case "$OS" in
+        arch) echo  ;;
+        centos) echo  ;;
+        debian) echo  ;;
+        fedora) echo  ;;
+        freebsd) echo  ;;
+        gentoo) echo  ;;
+        opensuse) echo  ;;
+        ubuntu) echo  ;;
+    esac
+fi
+"""
+format = "[$output]($style) "
+style = "green"
+when = "true"
+shell = ["bash", "--noprofile", "--norc"]
+
+[custom.proxy]
+description = "Display proxy for current session"
+command = """echo "$http_proxy" """
+when = "true"
+shell = ["bash", "--noprofile", "--norc"]
+format = "[↔$output ]($style)"
+style = "blue"
