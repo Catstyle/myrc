@@ -8,6 +8,8 @@ setup_zsh() {
     cat $SCRIPTPATH/.zshrc >> /tmp/.zshrc.template
     echo "source $SCRIPTPATH/.myrc" >> /tmp/.zshrc.template
     mv /tmp/.zshrc.template $HOME/.zshrc
+
+    cp .config/starship.toml $HOME/.config/starship.toml
 }
 
 case "$SHELL" in 
