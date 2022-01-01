@@ -56,7 +56,7 @@ DISABLE_MAGIC_FUNCTIONS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  brew cargo docker extract git golang pyenv python rust rustup vi-mode z
+  brew docker extract git golang pyenv python rust vi-mode z
   zsh-autosuggestions zsh-dircolors-solarized zsh-syntax-highlighting
 )
 
