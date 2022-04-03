@@ -12,9 +12,17 @@ setup_zsh() {
     cp .config/starship.toml $HOME/.config/starship.toml
 }
 
+setup_mac() {
+    echo 'eval "$(pyenv init --path)"' >> ~/.zprofile
+}
+
 case "$SHELL" in 
     */zsh)
         setup_zsh
         ;;
     *) echo "currently support zsh only" ;;
 esac
+
+if [[ $OSTYPE == darwin* ]]; then
+    setup_mac
+fi
