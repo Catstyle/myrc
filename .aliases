@@ -1,11 +1,11 @@
 # vim: filetype=bash
 
-alias l="ls -CF --color=auto"
-alias ls="ls -h --color=auto"
-alias ll="ls -alFh --color=auto"
+alias ls="exa --icons --color=always"
+alias ll="exa --icons -alhg --color=always --git"
 
 alias find="fd"
 alias grep="rg"
+alias du="dust"
 
 grep_opts="--color=auto -n "
 # alias grep="grep $grep_opts"
